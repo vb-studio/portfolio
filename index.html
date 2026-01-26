@@ -1,0 +1,863 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Portafolio personal de Visual Arquitechnology - VISUAL BLUEPRINT">
+    <title>VISUAL BLUEPRINT | Visual Arquitechnology</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Space+Grotesk:wght@400;700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
+    
+    <script src="https://unpkg.com/@studio-freight/lenis@1.0.29/dist/lenis.min.js"></script> 
+
+    <style>
+        /* =========================================
+           VARIABLES
+           ========================================= */
+        :root {
+            --bg-body: #F0F0F0;
+            --bg-card: #FFFFFF;
+            --text-main: #050505;
+            --text-muted: #404040;
+            --border-color: #000000;
+            --neon-primary: #FF4D4D;
+            --neon-secondary: #FF4D4D;
+        }
+
+        [data-theme="dark"] {
+            --bg-body: #050505;
+            --bg-card: #111111;
+            --text-main: #e0e0e0;
+            --text-muted: #888888;
+            --border-color: #ffffff;
+            --neon-primary: #FF4D4D;
+            --neon-secondary: #FF6B6B;
+        }
+
+        /* =========================================
+           BASE
+           ========================================= */
+        * { margin: 0; padding: 0; box-sizing: border-box; cursor: none; }
+        @media (hover: none) { * { cursor: auto !important; } }
+
+        html.lenis { height: auto; }
+        .lenis.lenis-smooth { scroll-behavior: auto; }
+        .lenis.lenis-smooth [data-lenis-prevent] { overscroll-behavior: contain; }
+        .lenis.lenis-stopped { overflow: hidden; }
+
+        html { width: 100%; overflow-x: hidden; scroll-behavior: auto !important; /* IMPORTANTE: Desactivar nativo */ }
+        
+        body {
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            font-family: 'Space Grotesk', sans-serif;
+            line-height: 1.6;
+            transition: background-color 0.5s ease, color 0.5s ease;
+            width: 100%;
+            overflow-x: hidden;
+            
+            /* Grid Sutil de Fondo */
+            background-image: 
+                linear-gradient(rgba(100, 100, 100, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(100, 100, 100, 0.03) 1px, transparent 1px);
+            background-size: 60px 60px;
+        }
+        
+        /* Viñeta Oscura en bordes */
+        body::after {
+            content: ""; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(circle at center, transparent 40%, var(--bg-body) 120%);
+            pointer-events: none; z-index: -2; opacity: 0.8;
+        }
+
+        /* =========================================
+           PRELOADER
+           ========================================= */
+        #preloader {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--bg-body); z-index: 99999;
+            display: flex; justify-content: center; align-items: center;
+            transition: opacity 0.5s ease, visibility 0.5s;
+        }
+        .intro-container {
+            font-family: 'Archivo Black', sans-serif; font-size: 4rem; color: var(--text-main);
+            display: flex; align-items: center; white-space: nowrap; overflow: hidden;
+        }
+        .char-fixed { z-index: 2; position: relative; }
+        .char-expand {
+            display: inline-block; max-width: 0; overflow: hidden; opacity: 0;
+            white-space: nowrap; transition: max-width 1.2s cubic-bezier(0.7, 0, 0.3, 1), opacity 0.5s ease;
+            font-size: 4rem; color: var(--text-main);
+        }
+        .intro-container.expand .char-expand { max-width: 500px; opacity: 1; }
+
+        /* =========================================
+           ARTEFACTOS (CURSOR & PARTICULAS)
+           ========================================= */
+        .cursor-dot, .cursor-outline {
+            position: fixed; top: 0; left: 0; transform: translate(-50%, -50%);
+            border-radius: 50%; z-index: 9999; pointer-events: none;
+        }
+        .cursor-dot { width: 8px; height: 8px; background-color: var(--neon-primary); }
+        .cursor-outline {
+            width: 40px; height: 40px; border: 2px solid var(--text-main);
+            transition: width 0.2s, height 0.2s, background-color 0.2s, border-color 0.2s;
+        }
+        body.hovering .cursor-outline { width: 80px; height: 80px; background-color: rgba(255, 77, 77, 0.15); border-color: var(--neon-primary); }
+        
+        #spotlight {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            pointer-events: none; z-index: -1;
+            background: radial-gradient(800px circle at var(--x) var(--y), rgba(255, 77, 77, 0.06), transparent 50%);
+        }
+        .particle {
+            position: absolute; color: var(--text-muted); font-family: 'Courier Prime', monospace;
+            opacity: 0.25; pointer-events: none; z-index: -3; animation: float linear infinite;
+        }
+        @keyframes float { 0% { transform: translateY(0) rotate(0deg); } 100% { transform: translateY(-100vh) rotate(360deg); } }
+
+        /* =========================================
+           SCROLL REVEAL
+           ========================================= */
+        .reveal {
+            opacity: 0; transform: translateY(80px) scale(0.95); 
+            transition: opacity 1s ease-out, transform 1s cubic-bezier(0.16, 1, 0.3, 1);
+            will-change: opacity, transform;
+        }
+        .reveal.active { opacity: 1; transform: translateY(0) scale(1); }
+        .reveal-delay-1 { transition-delay: 0.1s; }
+        .reveal-delay-2 { transition-delay: 0.2s; }
+        .reveal-delay-3 { transition-delay: 0.3s; }
+
+        /* =========================================
+           LAYOUT & SECCIONES
+           ========================================= */
+        header {
+            position: fixed; top: 0; left: 0; width: 100%; z-index: 100; padding: 2rem 3rem;
+            display: flex; justify-content: space-between; align-items: center;
+            background: transparent; backdrop-filter: blur(8px);
+        }
+        .logo a {
+            font-size: 1.5rem; font-weight: 900; text-decoration: none; color: var(--text-main);
+            font-family: 'Archivo Black', sans-serif; text-transform: uppercase; letter-spacing: -1px;
+        }
+        .nav-actions { display: flex; gap: 2rem; align-items: center; }
+        #theme-toggle { background: transparent; border: none; font-size: 1.5rem; color: var(--text-main); cursor: pointer; }
+
+        section {
+            min-height: 90vh; display: flex; flex-direction: column; justify-content: center;
+            padding: 4rem 5vw; position: relative; 
+            width: 100%; 
+            max-width: 1400px; 
+            margin: 0 auto;
+        }
+
+        /* HERO */
+        #hero { 
+            align-items: center; text-align: center; border-bottom: 1px solid rgba(0,0,0,0.1); padding-top: 12rem;
+        }
+        [data-theme="dark"] #hero { border-bottom: 1px solid rgba(255,255,255,0.1); }
+        #hero h1 { font-size: clamp(3rem, 8vw, 8rem); margin-bottom: 3rem; line-height: 0.95; }
+        #hero h1 span { display: block; color: transparent; -webkit-text-stroke: 2px var(--text-main); opacity: 0.5; }
+        .hero-subtitle {
+            font-size: 1.3rem; max-width: 700px; margin: 0 auto 4rem auto;
+            color: var(--text-muted); border-left: none; padding-left: 0;
+        }
+
+        /* MARQUEE */
+        .marquee-strip {
+            background: var(--text-main); color: var(--bg-body); padding: 1rem 0; overflow: hidden; white-space: nowrap;
+            transform: rotate(-2deg) scale(1.1); margin: 5vh 0; border: none; position: relative; opacity: 0.9; width: 105vw; left: -2.5vw;
+        }
+        .marquee-content { display: inline-block; white-space: nowrap; animation: scroll 60s linear infinite; }
+        .marquee-content span { font-family: 'Archivo Black'; font-size: 1.2rem; margin: 0 4rem; vertical-align: middle; letter-spacing: 2px; }
+        @keyframes scroll { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+
+        /* SERVICIOS */
+        #servicios h2 { font-size: 2rem; margin-bottom: 5rem; opacity: 0.5; font-family: 'Courier Prime'; text-align: center; width: 100%; }
+        .services-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4rem; width: 100%; }
+        .service-card { border-top: 2px solid var(--text-main); padding-top: 2rem; background: transparent; transition: transform 0.5s; display: flex; flex-direction: column; }
+        .service-card:hover { transform: translateY(-20px); }
+        .service-visual { height: 60px; margin-bottom: 1.5rem; display: flex; gap: 5px; opacity: 0.7; }
+        .v-radar { width: 60px; height: 60px; border: 2px solid var(--text-main); border-radius: 50%; position: relative; }
+        .v-radar::after { content: ''; position: absolute; top: 50%; left: 50%; width: 10px; height: 10px; background: var(--neon-primary); transform: translate(-50%, -50%); }
+        .v-grid-box { flex: 1; border: 2px solid var(--text-main); background: transparent; }
+        .v-grid-box:nth-child(2) { background: var(--text-main); }
+        .v-flow { display: flex; align-items: center; width: 100%; justify-content: space-between; }
+        .v-node { width: 15px; height: 15px; background: var(--text-main); border-radius: 50%; }
+        .v-line { flex-grow: 1; height: 2px; background: var(--text-main); margin: 0 5px; border-bottom: 2px dotted var(--text-main); background: transparent; }
+        .v-node.highlight { background: var(--neon-primary); }
+        .service-card h3 { font-size: 1.8rem; margin-bottom: 1rem; font-family: 'Archivo Black'; text-transform: uppercase; }
+        .service-card p { font-size: 1.1rem; color: var(--text-muted); }
+
+        /* =========================================
+           NUEVA SECCIÓN: THE PROCESS (Grid System)
+           ========================================= */
+           #proceso { min-height: auto; padding-bottom: 8rem; }
+        #proceso h2 { 
+            font-size: 2rem; margin-bottom: 4rem; opacity: 0.5; 
+            font-family: 'Courier Prime'; text-align: left; 
+            border-bottom: 2px solid var(--text-main); padding-bottom: 1rem; width: 100%;
+        }
+
+        .process-wrapper {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            border-left: 2px solid var(--text-main);
+            border-top: 2px solid var(--text-main);
+            width: 100%;
+        }
+
+        .step-item {
+            position: relative;
+            padding: 3rem 2rem;
+            border-right: 2px solid var(--text-main);
+            border-bottom: 2px solid var(--text-main);
+            background: transparent;
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            overflow: hidden;
+            display: flex; flex-direction: column; justify-content: space-between;
+            min-height: 350px;
+        }
+
+        /* Hover Effect: Inversión Brutalista */
+        .step-item::before {
+            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--text-main); z-index: -1;
+            transform: translateY(100%); transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .step-item:hover::before { transform: translateY(0); }
+        .step-item:hover * { color: var(--bg-body) !important; }
+        .step-item:hover .step-num { color: var(--neon-primary) !important; opacity: 1; }
+
+        .step-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 2rem; }
+        
+        .step-num {
+            font-family: 'Courier Prime', monospace; font-size: 1.2rem; 
+            color: var(--text-muted); opacity: 0.6;
+        }
+        
+        .step-icon { 
+            font-family: 'Archivo Black'; font-size: 1.5rem; opacity: 0.2; 
+        }
+
+        .step-item h3 {
+            font-family: 'Archivo Black'; font-size: 1.8rem; 
+            text-transform: uppercase; line-height: 1; margin-bottom: 1rem;
+            margin-top: auto; /* Push to bottom */
+        }
+
+        .step-item p {
+            font-family: 'Space Grotesk'; font-size: 1rem; 
+            color: var(--text-muted); line-height: 1.4;
+        }
+
+        /* Responsive para Proceso */
+        @media (max-width: 1024px) {
+            .process-wrapper { grid-template-columns: 1fr; }
+            .step-item { min-height: auto; border-left: none; }
+            /* Arreglo de bordes para móvil */
+            .process-wrapper { border-left: 2px solid var(--text-main); }
+        }
+
+        /* WORK (PARALLAX POTENCIADO) */
+        #work { padding-top: 5rem; }
+        .work-grid { display: flex; flex-direction: column; gap: 8rem; width: 100%; }
+        .work-card { display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: center; }
+        .work-card:nth-child(even) { direction: rtl; }
+        .work-card:nth-child(even) .work-content { direction: ltr; }
+        
+        .work-image { 
+            height: 500px; width: 100%; background: #000; overflow: hidden; /* MÁSCARA PARALLAX */
+            border: 2px solid var(--text-main); box-shadow: 12px 12px 0px 0px rgba(100,100,100,0.2); 
+            transition: box-shadow 0.5s; position: relative;
+        }
+        .work-card:hover .work-image { box-shadow: 8px 8px 0px 0px var(--neon-primary); }
+        
+        /* Imagen Parallax (MÁS GRANDE PARA MAS MOVIMIENTO) */
+        .work-image img { 
+            width: 100%; height: 130%; /* 130% = Mucho espacio para moverse */
+            object-fit: cover; filter: none; 
+            position: relative; top: -15%; /* Centrado */
+            will-change: transform; 
+        }
+        
+        .work-content { text-align: left; padding: 2.5rem; border: 2px solid var(--text-main); background: var(--bg-body); position: relative; }
+        .tags-container { display: flex; gap: 10px; margin-bottom: 1.5rem; flex-wrap: wrap; }
+        .tech-tag { font-family: 'Courier Prime'; border: 1px solid var(--text-main); padding: 5px 10px; font-size: 0.75rem; text-transform: uppercase; font-weight: bold; }
+        .work-content h3 { font-size: 2.2rem; margin-bottom: 1.5rem; line-height: 1.1; font-family: 'Archivo Black'; }
+        .work-content p { font-size: 1.1rem; margin-bottom: 2rem; color: var(--text-muted); }
+        .work-link { font-size: 1rem; font-weight: bold; text-decoration: none; color: var(--text-main); border-bottom: 3px solid var(--neon-primary); padding-bottom: 5px; }
+
+        /* ABOUT */
+        #about { min-height: 70vh; align-items: center; text-align: center; }
+        #about h2 { font-size: 3rem; margin-bottom: 3rem; }
+        #about p { font-size: 1.5rem; max-width: 800px; margin-bottom: 2rem; line-height: 1.5; margin-left: auto; margin-right: auto; }
+        #about strong { background: var(--neon-primary); color: #000; padding: 2px 8px; }
+
+        /* BOTONES MAGNETICOS */
+        .cta-button {
+            background: var(--text-main); color: var(--bg-body) !important; padding: 18px 36px; font-family: 'Archivo Black'; font-size: 1.1rem;
+            text-transform: uppercase; text-decoration: none; display: inline-block; 
+            transition: 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94); border: 2px solid var(--text-main); cursor: pointer;
+            position: relative; overflow: hidden;
+        }
+        .cta-button:hover { background: transparent; color: var(--text-main) !important; box-shadow: 4px 4px 0px 0px var(--neon-primary); }
+        .cta-button.secondary { background: transparent; color: var(--text-main) !important; }
+
+        /* =========================================
+           NUEVA SECCIÓN: CONTACTO (The Closer)
+           ========================================= */
+           #contacto {
+            min-height: 85vh; /* Ocupa casi toda la pantalla */
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            position: relative;
+            z-index: 10;
+        }
+
+        .contact-headline {
+            font-family: 'Archivo Black', sans-serif;
+            font-size: clamp(3.5rem, 12vw, 10rem); /* Escala brutal */
+            line-height: 0.85;
+            margin-bottom: 4rem;
+            color: var(--text-main);
+            text-transform: uppercase;
+            letter-spacing: -3px;
+        }
+        
+        .contact-headline span {
+            color: transparent;
+            -webkit-text-stroke: 2px var(--text-main);
+            display: block;
+            opacity: 0.4;
+            transition: opacity 0.5s ease;
+        }
+        
+        /* Efecto al pasar el mouse por la sección */
+        #contacto:hover .contact-headline span { opacity: 1; color: var(--text-main); }
+
+        .contact-actions {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2rem;
+            width: 100%;
+        }
+
+        /* Botón Contacto Gigante */
+        .big-cta {
+            font-size: clamp(1rem, 2vw, 1.5rem) !important;
+            padding: 1.5rem 4rem !important;
+            border-width: 3px !important;
+            background: var(--text-main) !important;
+            color: var(--bg-body) !important;
+        }
+        
+        .big-cta:hover {
+            background: transparent !important;
+            color: var(--text-main) !important;
+            box-shadow: 8px 8px 0px 0px var(--neon-primary) !important;
+        }
+
+        .email-link {
+            font-family: 'Courier Prime', monospace;
+            font-size: 1.1rem;
+            color: var(--text-muted);
+            text-decoration: none;
+            border-bottom: 1px dotted var(--text-muted);
+            transition: color 0.3s;
+        }
+        .email-link:hover { color: var(--neon-primary); border-color: var(--neon-primary); }
+
+        /* Ajuste Móvil Específico para Contacto */
+        @media (max-width: 768px) {
+            #contacto { min-height: 60vh; padding-top: 4rem; }
+            .contact-headline { margin-bottom: 3rem; letter-spacing: -1px; }
+            .contact-headline span { opacity: 1; } /* En móvil siempre visible */
+        }
+
+        /* FOOTER */
+        footer {
+            min-height: 60vh; display: flex; flex-direction: column; justify-content: center; align-items: center;
+            background: var(--text-main); color: var(--bg-body); margin-top: 5rem; padding: 4rem 2rem; width: 100%;
+        }
+        .footer-logo { font-size: 6rem; opacity: 0.1; font-family: 'Archivo Black'; margin-top: 2rem; margin-bottom: 2rem; }
+        .footer-nav { display: flex; gap: 3rem; align-items: center; margin-bottom: 1rem; }
+        .footer-link {
+            font-family: 'Archivo Black', sans-serif; font-size: 1.5rem; color: var(--bg-body); text-decoration: none;
+            position: relative; transition: color 0.3s ease; cursor: pointer; display: inline-block;
+        }
+        .footer-link::after { content: '↗'; margin-left: 8px; font-size: 1.2rem; display: inline-block; transition: transform 0.3s ease; color: var(--neon-primary); }
+        .footer-link:hover { color: var(--neon-primary); }
+        .footer-link:hover::after { transform: translate(4px, -4px); }
+        
+        .certifications-list {
+            display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center; margin-top: 1rem;
+            font-family: 'Courier Prime', monospace; font-size: 0.95rem; 
+            color: var(--bg-body) !important; opacity: 0.7 !important;
+        }
+        .cert-separator { color: var(--neon-primary); margin: 0 5px; }
+
+        /* RESPONSIVE */
+        @media (max-width: 1024px) {
+             .services-grid { grid-template-columns: 1fr; gap: 4rem; }
+             .work-card { grid-template-columns: 1fr; gap: 2rem; }
+             .work-card:nth-child(even) { direction: ltr; }
+             .work-card:nth-child(even) .work-content { direction: ltr; }
+             .work-image { height: 350px; }
+        }
+        @media (max-width: 768px) {
+            .cursor-dot, .cursor-outline, #spotlight, #particles-container { display: none !important; }
+            header { padding: 1rem 1.5rem; background: var(--bg-body); }
+            .logo a { font-size: 1.2rem; }
+            .nav-actions { gap: 1rem; }
+            .cta-button.secondary { padding: 8px 16px; font-size: 0.9rem; }
+            #theme-toggle { font-size: 1.2rem; }
+            section { padding: 4rem 1.5rem; min-height: auto; }
+            #hero { padding-top: 8rem; padding-bottom: 4rem; }
+            #hero h1 { font-size: 2.8rem; margin-bottom: 2rem; }
+            .hero-subtitle { font-size: 1.1rem; }
+            .work-grid { gap: 5rem; }
+            .work-card { display: flex; flex-direction: column; gap: 0; }
+            .work-image { height: 250px; width: 100%; border-bottom: none; box-shadow: 6px 6px 0px 0px rgba(100,100,100,0.2); }
+            .work-content { padding: 1.5rem; border-top: none; width: 100%; }
+            .work-content h3 { font-size: 1.8rem; }
+            .services-grid { gap: 3rem; }
+            #about h2 { font-size: 2.5rem; }
+            #about p { font-size: 1.2rem; text-align: left; }
+            .intro-container { font-size: 2rem; }
+            .char-expand { font-size: 2rem; }
+            .intro-container.expand .char-expand { max-width: 250px; }
+            .footer-nav { flex-direction: column; gap: 1.5rem; margin-bottom: 0; }
+            .footer-link { font-size: 1.2rem; }
+            .certifications-list { flex-direction: column; gap: 10px; align-items: center; margin-top: 0; }
+            .cert-separator { display: none; }
+            .footer-logo { font-size: 4rem; margin: 2rem 0; }
+        }
+
+        /* =========================================
+           CORRECCIONES JULES V1.0 (MOBILE PATCH)
+           ========================================= */
+           @media (max-width: 768px) {
+            
+            /* Ajuste del Título de Sección */
+            #proceso h2 {
+                font-size: 1.5rem; /* Más pequeño */
+                margin-bottom: 2rem;
+                padding-bottom: 0.5rem;
+            }
+
+            /* Wrapper: Eliminar bordes externos complejos */
+            .process-wrapper {
+                border-left: 2px solid var(--text-main); /* Mantiene línea guía izq */
+                border-top: none; /* Limpiamos arriba */
+                border-right: none;
+            }
+
+            /* Items: Compactar verticalmente */
+            .step-item {
+                padding: 2rem 1.5rem; /* Mucho menos padding */
+                min-height: auto; /* Altura automática */
+                border-right: none !important; /* IMPORTANTE: Quita borde derecho */
+                border-bottom: 2px solid var(--text-main);
+                display: block; /* Quitar flex para que fluya natural */
+            }
+
+            /* Tipografía Ajustada */
+            .step-header { margin-bottom: 1rem; }
+            .step-num { font-size: 1rem; }
+            
+            .step-item h3 {
+                font-size: 1.5rem; /* Reducción de H3 */
+                margin-bottom: 0.8rem;
+                margin-top: 1rem;
+            }
+            
+            .step-item p {
+                font-size: 1rem;
+                max-width: 100%;
+            }
+
+            /* Arreglo del último item para cerrar la caja */
+            .step-item:last-child {
+                border-bottom: 2px solid var(--text-main);
+            }
+        }
+
+        /* =========================================
+           CORRECCIÓN CRÍTICA: GHOST MODE FIX
+           ========================================= */
+           @media (max-width: 768px) {
+            
+            /* FORZAR VISIBILIDAD EN MÓVIL */
+            .reveal, 
+            .reveal-delay-1, 
+            .reveal-delay-2, 
+            .reveal-delay-3 {
+                opacity: 1 !important;
+                transform: translate(0, 0) scale(1) !important;
+                transition: none !important; /* Quita el delay para carga instantánea */
+                visibility: visible !important;
+            }
+
+            /* Asegurar que el contenido no colapse */
+            section {
+                min-height: auto !important;
+                height: auto !important;
+                overflow: visible !important;
+            }
+        }
+
+    </style>
+</head>
+<body>
+    
+    <div id="preloader">
+        <div class="intro-container">
+            <span class="char-fixed">V</span>
+            <span class="char-expand">ISUAL</span>
+            <span style="display:inline-block; width: 15px;"></span>
+            <span class="char-fixed">B</span>
+            <span class="char-expand">LUEPRINT</span>
+        </div>
+    </div>
+
+    <div class="cursor-dot"></div><div class="cursor-outline"></div><div id="spotlight"></div><div id="particles-container"></div>
+    
+    <header>
+        <div class="logo"><a href="#" class="hover-target">VISUAL BLUEPRINT</a></div>
+        <div class="nav-actions">
+            <a href="#contacto" class="cta-button secondary hover-target" style="border:none; padding:0;">Hablemos</a>
+            <button id="theme-toggle" class="hover-target">🌙</button>
+        </div>
+    </header>
+
+    <section id="hero">
+        <h1 class="reveal">TU LINKEDIN<br/>VENDE HUMO.<br/><span>TU WEB VENDE<br/>CONFIANZA.</span></h1>
+        
+        <p class="hero-subtitle reveal reveal-delay-1">Deja de enviar PDFs aburridos. Usa infraestructura visual que convierte visitas en reuniones. El diseño bonito no factura, la estrategia sí.</p>
+        
+        <div class="reveal reveal-delay-2" style="display: flex; gap: 1rem; align-items: center; justify-content: center; flex-wrap: wrap;">
+            <a href="#work" class="cta-button hover-target magnetic-btn">VER CASOS</a>
+            <a href="https://www.linkedin.com/in/jerem%C3%ADas-leiva-81a049393/" target="_blank" class="hover-target magnetic-btn" style="font-weight:bold; text-decoration:none; color:var(--text-main);">LINKEDIN &rarr;</a>
+        </div>
+    </section>
+    
+    <div class="marquee-strip">
+        <div class="marquee-content">
+            <span>AUTOMATIZACIÓN</span> <span>///</span> <span>VISUAL IMPACT</span> <span>///</span> <span>GAP SELLING</span> <span>///</span> <span>INBOUND CERTIFIED</span> <span>///</span>
+            <span>AUTOMATIZACIÓN</span> <span>///</span> <span>VISUAL IMPACT</span> <span>///</span> <span>GAP SELLING</span> <span>///</span> <span>INBOUND CERTIFIED</span> <span>///</span>
+            <span>AUTOMATIZACIÓN</span> <span>///</span> <span>VISUAL IMPACT</span> <span>///</span> <span>GAP SELLING</span> <span>///</span> <span>INBOUND CERTIFIED</span> <span>///</span>
+        </div>
+    </div>
+
+    <section id="servicios">
+        <h2 class="reveal">CAPACIDADES TÉCNICAS</h2>
+        <div class="services-grid">
+            <div class="service-card reveal reveal-delay-1 hover-target">
+                <div class="service-visual"><div class="v-radar"></div></div>
+                <h3>01. DIAGNÓSTICO</h3>
+                <p>Auditoría de por qué no vendes. Identificamos exactamente dónde se pierden tus oportunidades con datos.</p>
+            </div>
+            <div class="service-card reveal reveal-delay-2 hover-target">
+                <div class="service-visual"><div class="v-grid-box"></div><div class="v-grid-box" style="background: var(--neon-primary);"></div><div class="v-grid-box"></div></div>
+                <h3>02. INGENIERÍA</h3>
+                <p>Webs Neo-Brutalistas que retienen. Diseño que no distrae, convierte. Interfaces que construyen confianza.</p>
+            </div>
+            <div class="service-card reveal reveal-delay-3 hover-target">
+                <div class="service-visual v-flow"><div class="v-node"></div><div class="v-line"></div><div class="v-node highlight"></div><div class="v-line"></div><div class="v-node"></div></div>
+                <h3>03. SISTEMAS</h3>
+                <p>Flujos que nutren leads, califican oportunidades y cierran ventas sin tu intervención. Tu infraestructura 24/7.</p>
+            </div>
+        </div>
+    </section>
+
+    <section id="proceso">
+        <h2 class="reveal">SYSTEM LOGIC // THE PROCESS</h2>
+        
+        <div class="process-wrapper reveal reveal-delay-1">
+            
+            <div class="step-item hover-target">
+                <div class="step-header">
+                    <span class="step-num">[01]</span>
+                    <span class="step-icon">///</span>
+                </div>
+                <div>
+                    <h3>STRUCTURAL<br>DIAGNOSTIC</h3>
+                    <p>Analizamos la fricción actual de tu marca con precisión quirúrgica. No hay conjeturas; auditamos tu infraestructura actual para definir los activos visuales que tu modelo de negocio exige para escalar.</p>
+                </div>
+            </div>
+
+            <div class="step-item hover-target">
+                <div class="step-header">
+                    <span class="step-num">[02]</span>
+                    <span class="step-icon">:::</span>
+                </div>
+                <div>
+                    <h3>THE BLUEPRINT<br>PROTOCOL</h3>
+                    <p>Transformamos la lógica de negocio en un ecosistema visual tangible. Diseñamos los planos y esquemas exactos (wireframes & visual systems) que convertirán tu autoridad en un activo monetizable.</p>
+                </div>
+            </div>
+
+            <div class="step-item hover-target">
+                <div class="step-header">
+                    <span class="step-num">[03]</span>
+                    <span class="step-icon">+++</span>
+                </div>
+                <div>
+                    <h3>ASSET<br>ENGINEERING</h3>
+                    <p>Ejecución técnica con estándares de alta fidelidad. Construimos y desplegamos cada pieza del sistema con un único propósito: eliminar el ruido y acelerar la confianza del mercado. Cero latencia, máximo impacto.</p>
+                </div>
+            </div>
+
+            <div class="step-item hover-target">
+                <div class="step-header">
+                    <span class="step-num">[04]</span>
+                    <span class="step-icon">>>></span>
+                </div>
+                <div>
+                    <h3>SYSTEM<br>INTEGRATION</h3>
+                    <p>Entrega del ecosistema completo listo para operar (Fricción Cero). Recibes una biblioteca sistematizada y documentación técnica para que tu equipo implemente la nueva identidad con autonomía total.</p>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <section id="work">
+        <div class="work-grid">
+            <article class="work-card reveal hover-target">
+                <div class="work-content">
+                    <span style="font-family:'Courier Prime'; color:var(--neon-primary); font-weight:bold;">CASE 01 // ACQUISITION PROTOCOL</span>
+                    <div class="tags-container" style="margin-top: 1rem;"><span class="tech-tag">HUBSPOT CRM</span><span class="tech-tag">N8N AUTOMATION</span></div>
+                    <h3>INFRAESTRUCTURA DE CAPTACIÓN B2B</h3>
+                    <p>Sistema visual que nutre leads automáticamente mientras usted duerme. Integración total CRM. Velocity Lead: +45%.</p>
+                    <a href="#" class="work-link hover-target">ANALIZAR FLUJO &rarr;</a>
+                </div>
+                <div class="work-image parallax-container"><img src="caso1.png" alt="Caso 1" class="parallax-img"></div>
+            </article>
+            <article class="work-card reveal hover-target">
+                <div class="work-content">
+                    <span style="font-family:'Courier Prime'; color:var(--neon-primary); font-weight:bold;">CASE 02 // AUTHORITY COMMAND</span>
+                    <div class="tags-container" style="margin-top: 1rem;"><span class="tech-tag">DATA VIZ</span><span class="tech-tag">BRANDING</span></div>
+                    <h3>CENTRO DE COMANDO FINANCIERO</h3>
+                    <p>Interfaz de control para C-Levels. Transforma excel complejos en decisiones de 3 segundos. Visibilidad de Mercado: 3X.</p>
+                    <a href="#" class="work-link hover-target">VER LÓGICA DEL SISTEMA &rarr;</a>
+                </div>
+                <div class="work-image parallax-container"><img src="caso2.png" alt="Caso 2" class="parallax-img"></div>
+            </article>
+            <article class="work-card reveal hover-target">
+                <div class="work-content">
+                    <span style="font-family:'Courier Prime'; color:var(--neon-primary); font-weight:bold;">CASE 03 // RETENTION ENGINE</span>
+                    <div class="tags-container" style="margin-top: 1rem;"><span class="tech-tag">SAAS UX/UI</span><span class="tech-tag">CHURN REDUCTION</span></div>
+                    <h3>PROTOCOLO DE RETENCIÓN VISUAL</h3>
+                    <p>Rediseño de UX enfocado en reducir el Churn Rate y aumentar el LTV del usuario. Pipeline Generado: +$150K.</p>
+                    <a href="#" class="work-link hover-target">VER MÉTRICAS &rarr;</a>
+                </div>
+                <div class="work-image parallax-container"><img src="caso3.png" alt="Caso 3" class="parallax-img"></div>
+            </article>
+        </div>
+    </section>
+
+    <section id="about" class="reveal">
+        <h2>MANIFIESTO</h2>
+        <article>
+            <p>La mayoría de las agencias te venden "diseño bonito". <strong>Eso no paga las facturas.</strong> Tu problema no es que tu web sea fea; tu problema es que es invisible y no genera confianza.</p>
+            <p>Soy Jere, y no soy un "diseñador gráfico". Soy un <strong>Visual Architect</strong> certificado en Metodología Inbound por HubSpot. Mi trabajo es cerrar la brecha (GAP) entre donde estás hoy y donde quieres estar facturando.</p>
+            <p>Construyo infraestructura digital agresiva. Sin adornos innecesarios. Solo estrategia pura, automatización y diseño brutalista que obliga a tus prospectos a prestar atención.</p>
+        </article>
+    </section>
+
+    <section id="contacto">
+        <h2 class="contact-headline reveal">
+            READY TO<br>
+            <span>SCALE?</span>
+        </h2>
+        
+        <div class="contact-actions reveal reveal-delay-1">
+            <a href="https://www.linkedin.com/in/jerem%C3%ADas-leiva-81a049393/" target="_blank" class="cta-button big-cta magnetic-btn hover-target">
+                INITIATE PROTOCOL
+            </a>
+            
+            <a href="mailto:jere@visualblueprint.com" class="email-link hover-target">
+                jere@visualblueprint.com
+            </a>
+        </div>
+    </section>
+
+    <footer>
+        <div class="footer-nav">
+            <a href="#" class="footer-link hover-target magnetic-btn">VOLVER ARRIBA</a>
+        </div>
+
+        <h2 class="footer-logo">VB</h2>
+        
+        <div class="certifications-list">
+            <span style="border-bottom: 1px solid var(--neon-primary); padding-bottom: 2px;">INBOUND CERTIFIED</span>
+            <span class="cert-separator">//</span>
+            <span style="border-bottom: 1px solid var(--neon-primary); padding-bottom: 2px;">FRICTIONLESS SALES</span>
+            <span class="cert-separator">//</span>
+            <span style="border-bottom: 1px solid var(--neon-primary); padding-bottom: 2px;">INBOUND SALES</span>
+        </div>
+
+        <p style="margin-top: 3rem; opacity: 0.5;">&copy; 2026 Visual Blueprint</p>
+    </footer>
+
+    <script>
+        // VARIABLE GLOBAL DEL MOTOR DE SCROLL
+        let lenis;
+
+        // 1. GESTIÓN DEL PRELOADER
+        window.addEventListener('load', () => {
+            const preloader = document.getElementById('preloader');
+            const introContainer = document.querySelector('.intro-container');
+            
+            const killPreloader = () => {
+                if(preloader) {
+                    preloader.style.opacity = '0';
+                    setTimeout(() => { preloader.style.display = 'none'; }, 500);
+                }
+            };
+
+            if (sessionStorage.getItem('visited')) {
+                killPreloader();
+            } else {
+                if(introContainer) setTimeout(() => { introContainer.classList.add('expand'); }, 500);
+                setTimeout(() => {
+                    killPreloader();
+                    sessionStorage.setItem('visited', 'true');
+                }, 2500);
+            }
+        });
+
+        // 2. MOTOR FÍSICO (LENIS + PARALLAX)
+        try {
+            if (typeof Lenis !== 'undefined') {
+                lenis = new Lenis({
+                    duration: 2.0, // Scroll Pesado y Lujoso
+                    easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+                    direction: 'vertical',
+                    smooth: true,
+                });
+
+                function raf(time) {
+                    lenis.raf(time);
+                    requestAnimationFrame(raf);
+                }
+                requestAnimationFrame(raf);
+
+                // Parallax Logic
+                const parallaxImages = document.querySelectorAll('.parallax-img');
+                lenis.on('scroll', (e) => {
+                    parallaxImages.forEach(img => {
+                        const rect = img.parentElement.getBoundingClientRect();
+                        if(rect.top < window.innerHeight && rect.bottom > 0) {
+                            const dist = rect.top - (window.innerHeight / 2);
+                            img.style.transform = `translateY(${dist * 0.25}px) scale(1.1)`; 
+                        }
+                    });
+                });
+            }
+        } catch (e) {
+            console.warn("Lenis fallback.");
+        }
+
+        // 3. INTERCEPTOR DE CLICKS (SOLUCIÓN DEL SALTO)
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault(); // Evita el salto nativo
+                const targetID = this.getAttribute('href');
+                
+                if (lenis) {
+                    // Si Lenis existe, úsalo para navegar suave
+                    if (targetID === '#') {
+                        lenis.scrollTo(0, { duration: 2.5 }); // Volver arriba suave
+                    } else {
+                        lenis.scrollTo(targetID, { duration: 2.5 }); // Ir a sección suave
+                    }
+                } else {
+                    // Fallback si Lenis no cargó
+                    if (targetID === '#') {
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                    } else {
+                        document.querySelector(targetID).scrollIntoView({ behavior: 'smooth' });
+                    }
+                }
+            });
+        });
+
+        // 4. INTERACCIONES (Solo Desktop)
+        if (window.innerWidth > 768) {
+            // Scroll Reveal
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) { entry.target.classList.add('active'); } 
+                    else {
+                        const b = entry.boundingClientRect;
+                        if (b.bottom < 0 || b.top > window.innerHeight) entry.target.classList.remove('active');
+                    }
+                });
+            }, { threshold: 0.15, rootMargin: "-10px 0px" });
+            document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+            // Cursor & Particles
+            const cursorDot = document.querySelector('.cursor-dot');
+            const cursorOutline = document.querySelector('.cursor-outline');
+            const particlesContainer = document.getElementById('particles-container');
+            const symbols = ['+', '×', '•', '::', 'Wait', '///'];
+            
+            if(particlesContainer) {
+                setInterval(() => {
+                    const p = document.createElement('div'); p.classList.add('particle');
+                    p.textContent = symbols[Math.floor(Math.random() * symbols.length)];
+                    p.style.left = Math.random() * 100 + 'vw'; p.style.top = Math.random() * 100 + 'vh';
+                    p.style.fontSize = (Math.random() * 1.5 + 0.5) + 'rem';
+                    p.style.animationDuration = (Math.random() * 10 + 10) + 's';
+                    particlesContainer.appendChild(p);
+                    setTimeout(() => p.remove(), 20000);
+                }, 800);
+            }
+
+            window.addEventListener('mousemove', (e) => {
+                const x = e.clientX; const y = e.clientY;
+                if(cursorDot) { cursorDot.style.left = x + 'px'; cursorDot.style.top = y + 'px'; }
+                if(cursorOutline && !e.target.classList.contains('magnetic-btn')) {
+                    cursorOutline.animate({ left: x + 'px', top: y + 'px' }, { duration: 500, fill: "forwards" });
+                }
+                document.documentElement.style.setProperty('--x', x + 'px'); document.documentElement.style.setProperty('--y', y + 'px');
+            });
+
+            document.querySelectorAll('.hover-target').forEach(el => {
+                el.addEventListener('mouseenter', () => document.body.classList.add('hovering'));
+                el.addEventListener('mouseleave', () => document.body.classList.remove('hovering'));
+            });
+
+            // Magnetic Buttons
+            document.querySelectorAll('.magnetic-btn').forEach(btn => {
+                btn.addEventListener('mousemove', (e) => {
+                    const rect = btn.getBoundingClientRect();
+                    const x = e.clientX - rect.left - rect.width / 2;
+                    const y = e.clientY - rect.top - rect.height / 2;
+                    btn.style.transform = `translate(${x * 0.3}px, ${y * 0.3}px)`;
+                    if(cursorOutline) cursorOutline.animate({ left: (rect.left + rect.width/2 + x*0.3) + 'px', top: (rect.top + rect.height/2 + y*0.3) + 'px' }, { duration: 100, fill: "forwards" });
+                });
+                btn.addEventListener('mouseleave', () => { btn.style.transform = 'translate(0px, 0px)'; });
+            });
+        }
+
+        // Tema
+        const toggleButton = document.getElementById('theme-toggle'); const htmlElement = document.documentElement;
+        if (!localStorage.getItem('theme')) { htmlElement.setAttribute('data-theme', 'dark'); if(toggleButton) toggleButton.textContent = '☀️'; } 
+        else { const saved = localStorage.getItem('theme'); htmlElement.setAttribute('data-theme', saved); if(toggleButton) toggleButton.textContent = saved === 'dark' ? '☀️' : '🌙'; }
+        if(toggleButton) {
+            toggleButton.addEventListener('click', () => {
+                const current = htmlElement.getAttribute('data-theme'); const next = current === 'dark' ? 'light' : 'dark';
+                htmlElement.setAttribute('data-theme', next); localStorage.setItem('theme', next); toggleButton.textContent = next === 'dark' ? '☀️' : '🌙';
+            });
+        }
+    </script>
+</body>
+</html>
