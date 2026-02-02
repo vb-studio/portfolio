@@ -12,7 +12,7 @@
 
     <style>
         /* =========================================
-           VARIABLES DE SISTEMA
+           VARIABLES
            ========================================= */
         :root {
             --bg-body: #F0F0F0;
@@ -38,7 +38,7 @@
            BASE
            ========================================= */
         * { margin: 0; padding: 0; box-sizing: border-box; cursor: none; }
-        @media (hover: none) { * { cursor: auto !important; } } /* Cursor normal en móvil */
+        @media (hover: none) { * { cursor: auto !important; } }
 
         html.lenis { height: auto; }
         .lenis.lenis-smooth { scroll-behavior: auto; }
@@ -57,7 +57,26 @@
             background-size: 60px 60px;
         }
 
-        /* ARTEFACTOS VISUALES (CURSOR) */
+        /* VIÑETA */
+        body::after {
+            content: ""; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(circle at center, transparent 40%, var(--bg-body) 120%);
+            pointer-events: none; z-index: -2; opacity: 0.8;
+        }
+
+        /* =========================================
+           ARTEFACTOS (CURSOR + SPOTLIGHT)
+           ========================================= */
+        
+        /* 1. La Luz de Fondo (Spotlight) */
+        #spotlight {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            pointer-events: none; z-index: -1;
+            /* Gradiente radial que sigue a las variables --x e --y */
+            background: radial-gradient(800px circle at var(--x) var(--y), rgba(255, 77, 77, 0.06), transparent 50%);
+        }
+
+        /* 2. El Cursor */
         .cursor-dot, .cursor-outline {
             position: fixed; top: 0; left: 0; transform: translate(-50%, -50%);
             border-radius: 50%; z-index: 9999; pointer-events: none;
@@ -67,20 +86,21 @@
             width: 40px; height: 40px; border: 2px solid var(--text-main);
             transition: width 0.2s, height 0.2s, background-color 0.2s, border-color 0.2s;
         }
-        /* Estado Hover del Cursor */
         body.hovering .cursor-outline { 
             width: 80px; height: 80px; 
             background-color: rgba(255, 77, 77, 0.15); 
             border-color: var(--neon-primary); 
         }
 
-        /* HEADER */
+        /* =========================================
+           HEADER
+           ========================================= */
         header {
             position: fixed; top: 0; left: 0; width: 100%; z-index: 100; padding: 2rem 3rem;
             display: flex; justify-content: space-between; align-items: center;
-            background: transparent; pointer-events: none; /* Dejar pasar clics si no es link */
+            background: transparent; pointer-events: none; 
         }
-        header * { pointer-events: auto; } /* Reactivar clics en hijos */
+        header * { pointer-events: auto; }
 
         .logo a {
             font-size: 1.5rem; font-weight: 900; text-decoration: none; color: var(--text-main);
@@ -90,7 +110,7 @@
         #theme-toggle { background: transparent; border: none; font-size: 1.5rem; color: var(--text-main); cursor: pointer; }
 
         /* =========================================
-           LAYOUT DEL FORMULARIO
+           FORMULARIO
            ========================================= */
         #application-protocol {
             min-height: 100vh;
@@ -113,7 +133,7 @@
 
         .vb-form-container {
             width: 100%;
-            background: rgba(255, 255, 255, 0.01); /* Muy sutil */
+            background: rgba(255, 255, 255, 0.01);
             border: 2px solid var(--text-main);
             padding: 3rem;
             position: relative;
@@ -131,19 +151,17 @@
             color: var(--neon-primary); text-transform: uppercase; letter-spacing: 1px;
         }
 
-        /* INPUTS Y SELECTS - ESTILO JULES/VB */
         input, select, textarea {
             width: 100%; padding: 1rem;
             background: transparent;
             border: 2px solid var(--text-muted);
             color: var(--text-main);
-            font-family: 'Space Grotesk', monospace; /* FUENTE CORREGIDA */
+            font-family: 'Space Grotesk', monospace;
             font-size: 1rem;
             border-radius: 0; outline: none; appearance: none;
             transition: all 0.3s ease;
         }
 
-        /* Corrección específica para opciones del select */
         option { 
             background-color: var(--bg-body); 
             color: var(--text-main); 
@@ -156,7 +174,7 @@
             box-shadow: 4px 4px 0px 0px var(--neon-primary);
         }
 
-        /* PRODUCTOS RECOMENDADOS */
+        /* DINÁMICOS */
         #micro-segment-section, #product-recommendation {
             display: none; margin-top: 1rem;
             animation: fadeIn 0.5s ease forwards;
@@ -191,27 +209,24 @@
             box-shadow: 8px 8px 0px 0px var(--neon-primary);
         }
 
-        /* FOOTER */
         footer {
             padding: 2rem; text-align: center; border-top: 1px solid var(--text-muted);
             margin-top: 4rem; opacity: 0.6; font-family: 'Courier Prime'; font-size: 0.8rem;
         }
 
-        /* RESPONSIVE (CORRECCIONES JULES) */
         @media (max-width: 768px) {
             .form-grid { grid-template-columns: 1fr; gap: 1rem; }
             .full-width { grid-column: span 1; }
             .vb-form-container { padding: 1.5rem; border-width: 2px; }
             .protocol-title { font-size: 2rem; }
-            
-            /* En móvil desactivamos cursor custom para mejor UX */
-            .cursor-dot, .cursor-outline { display: none !important; }
+            .cursor-dot, .cursor-outline, #spotlight { display: none !important; } /* Desactivar efectos pesados en móvil */
             * { cursor: auto !important; }
         }
     </style>
 </head>
 <body>
 
+    <div id="spotlight"></div>
     <div class="cursor-dot"></div><div class="cursor-outline"></div>
     
     <header>
@@ -312,59 +327,44 @@
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             
-            // 1. LENIS SCROLL (Suavidad)
+            // 1. LENIS SCROLL
             try {
-                const lenis = new Lenis({
-                    duration: 1.2,
-                    easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-                    direction: 'vertical',
-                    smooth: true
-                });
-                function raf(time) {
-                    lenis.raf(time);
-                    requestAnimationFrame(raf);
-                }
+                const lenis = new Lenis({ duration: 1.2, easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)), direction: 'vertical', smooth: true });
+                function raf(time) { lenis.raf(time); requestAnimationFrame(raf); }
                 requestAnimationFrame(raf);
-            } catch(e) { console.log("Lenis init skipped"); }
+            } catch(e) {}
 
-            // 2. CURSOR LOGIC (El alma de VB Studio)
-            // Solo se activa si la ventana es mayor a 768px para no molestar en móvil
+            // 2. CURSOR + SPOTLIGHT (La magia)
             if (window.innerWidth > 768) {
                 const cursorDot = document.querySelector('.cursor-dot');
                 const cursorOutline = document.querySelector('.cursor-outline');
+                // IMPORTANTE: Aquí pasamos las variables --x e --y al documento para que el #spotlight funcione
                 
                 window.addEventListener('mousemove', (e) => {
                     const x = e.clientX;
                     const y = e.clientY;
                     
-                    // Movimiento directo del punto
-                    if(cursorDot) {
-                        cursorDot.style.left = `${x}px`;
-                        cursorDot.style.top = `${y}px`;
-                    }
-                    
-                    // Movimiento con delay del outline (efecto magnético)
-                    if(cursorOutline) {
-                        cursorOutline.animate({
-                            left: `${x}px`,
-                            top: `${y}px`
-                        }, { duration: 500, fill: "forwards" });
-                    }
+                    // Actualizar CSS Variables para el Spotlight
+                    document.documentElement.style.setProperty('--x', x + 'px');
+                    document.documentElement.style.setProperty('--y', y + 'px');
+
+                    // Mover Cursor
+                    if(cursorDot) { cursorDot.style.left = `${x}px`; cursorDot.style.top = `${y}px`; }
+                    if(cursorOutline) { cursorOutline.animate({ left: `${x}px`, top: `${y}px` }, { duration: 500, fill: "forwards" }); }
                 });
 
-                // Efecto Hover en elementos interactivos
                 document.querySelectorAll('.hover-target').forEach(el => {
                     el.addEventListener('mouseenter', () => document.body.classList.add('hovering'));
                     el.addEventListener('mouseleave', () => document.body.classList.remove('hovering'));
                 });
             }
 
-            // 3. THEME TOGGLE (Dark/Light)
+            // 3. THEME
             const toggleButton = document.getElementById('theme-toggle');
             const htmlElement = document.documentElement;
             if(toggleButton) {
                 toggleButton.addEventListener('click', (e) => {
-                    e.preventDefault(); // Evitar saltos
+                    e.preventDefault();
                     const current = htmlElement.getAttribute('data-theme');
                     const next = current === 'dark' ? 'light' : 'dark';
                     htmlElement.setAttribute('data-theme', next);
@@ -372,7 +372,7 @@
                 });
             }
 
-            // 4. LÓGICA DEL FORMULARIO (VB LOGIC)
+            // 4. LOGICA FORMULARIO
             const macroBudget = document.getElementById('macro-budget');
             const microSection = document.getElementById('micro-segment-section');
             const microBudget = document.getElementById('micro-budget');
@@ -394,7 +394,6 @@
                     }
                 });
             }
-
             if(microBudget) {
                 microBudget.addEventListener('change', (e) => {
                     if (e.target.value === 'Bootstrapping') productBox.style.display = 'block';
@@ -402,7 +401,7 @@
                 });
             }
 
-            // 5. ENVÍO A N8N
+            // 5. ENVIO DATOS
             if(form) {
                 form.addEventListener('submit', async (e) => {
                     e.preventDefault();
@@ -412,7 +411,6 @@
 
                     const formData = new FormData(form);
                     const data = Object.fromEntries(formData.entries());
-                    
                     const webhookURL = 'https://n8n-production-02ef.up.railway.app/webhook/cliente'; 
 
                     try {
