@@ -93,11 +93,16 @@
            HEADER
            ========================================= */
         header {
-            position: fixed; top: 0; left: 0; width: 100%; z-index: 100; padding: 2rem 3rem;
-            display: flex; justify-content: space-between; align-items: center;
-            background: transparent; pointer-events: none; 
-        }
-        header * { pointer-events: auto; }
+    position: fixed; top: 0; left: 0; width: 100%; z-index: 100; padding: 2rem 3rem;
+    display: flex; justify-content: space-between; align-items: center;
+    
+    /* CAMBIO AQUÍ: Fondo sólido con un pelín de transparencia y desenfoque */
+    background: var(--bg-body); 
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid rgba(100,100,100,0.1); /* Sutil línea separadora */
+    
+    pointer-events: none; 
+}
 
         .logo a {
             font-size: 1.5rem; font-weight: 900; text-decoration: none; color: var(--text-main);
@@ -408,3 +413,4 @@
     </script>
 </body>
 </html>
+
