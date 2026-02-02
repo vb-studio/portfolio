@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VB STUDIO | Protocolo de Aplicación</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Space+Grotesk:wght@400;700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
+    
+    <script src="https://unpkg.com/@studio-freight/lenis@1.0.29/dist/lenis.min.js"></script> 
+
+    <style>
+        /* =========================================
+           VARIABLES DE SISTEMA
+           ========================================= */
+        :root {
+            --bg-body: #F0F0F0;
+            --bg-card: #FFFFFF;
+            --text-main: #050505;
+            --text-muted: #404040;
+            --border-color: #000000;
+            --neon-primary: #FF4D4D;
+            --neon-secondary: #FF4D4D;
+        }
+
+        [data-theme="dark"] {
+            --bg-body: #050505;
+            --bg-card: #111111;
+            --text-main: #e0e0e0;
+            --text-muted: #888888;
+            --border-color: #ffffff;
+            --neon-primary: #FF4D4D;
+            --neon-secondary: #FF6B6B;
+        }
+
+        /* =========================================
+           BASE
+           ========================================= */
+        * { margin: 0; padding: 0; box-sizing: border-box; cursor: none; }
+        @media (hover: none) { * { cursor: auto !important; } } /* Cursor normal en móvil */
+
+        html.lenis { height: auto; }
+        .lenis.lenis-smooth { scroll-behavior: auto; }
+        
+        body {
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            font-family: 'Space Grotesk', sans-serif;
+            line-height: 1.6;
+            transition: background-color 0.5s ease, color 0.5s ease;
+            width: 100%;
+            overflow-x: hidden;
+            background-image: 
+                linear-gradient(rgba(100, 100, 100, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(100, 100, 100, 0.03) 1px, transparent 1px);
+            background-size: 60px 60px;
+        }
+
+        /* ARTEFACTOS VISUALES (CURSOR) */
+        .cursor-dot, .cursor-outline {
+            position: fixed; top: 0; left: 0; transform: translate(-50%, -50%);
+            border-radius: 50%; z-index: 9999; pointer-events: none;
+        }
+        .cursor-dot { width: 8px; height: 8px; background-color: var(--neon-primary); }
+        .cursor-outline {
+            width: 40px; height: 40px; border: 2px solid var(--text-main);
+            transition: width 0.2s, height 0.2s, background-color 0.2s, border-color 0.2s;
+        }
+        /* Estado Hover del Cursor */
+        body.hovering .cursor-outline { 
+            width: 80px; height: 80px; 
+            background-color: rgba(255, 77, 77, 0.15); 
+            border-color: var(--neon-primary); 
+        }
+
+        /* HEADER */
+        header {
+            position: fixed; top: 0; left: 0; width: 100%; z-index: 100; padding: 2rem 3rem;
+            display: flex; justify-content: space-between; align-items: center;
+            background: transparent; pointer-events: none; /* Dejar pasar clics si no es link */
+        }
+        header * { pointer-events: auto; } /* Reactivar clics en hijos */
+
+        .logo a {
+            font-size: 1.5rem; font-weight: 900; text-decoration: none; color: var(--text-main);
+            font-family: 'Archivo Black', sans-serif; text-transform: uppercase; letter-spacing: -1px;
+        }
+        .nav-actions { display: flex; gap: 2rem; align-items: center; }
+        #theme-toggle { background: transparent; border: none; font-size: 1.5rem; color: var(--text-main); cursor: pointer; }
+
+        /* =========================================
+           LAYOUT DEL FORMULARIO
+           ========================================= */
+        #application-protocol {
+            min-height: 100vh;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            padding: 8rem 2rem 4rem 2rem;
+            max-width: 900px; margin: 0 auto;
+        }
+
+        .protocol-title {
+            font-family: 'Archivo Black', sans-serif;
+            font-size: clamp(2.5rem, 5vw, 4rem);
+            text-transform: uppercase; margin-bottom: 1rem; text-align: center;
+            line-height: 1; color: var(--text-main);
+        }
+        .protocol-subtitle {
+            font-family: 'Courier Prime', monospace;
+            color: var(--text-muted); margin-bottom: 3rem; text-align: center;
+            max-width: 600px; font-size: 0.9rem;
+        }
+
+        .vb-form-container {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.01); /* Muy sutil */
+            border: 2px solid var(--text-main);
+            padding: 3rem;
+            position: relative;
+            box-shadow: 12px 12px 0px 0px rgba(100,100,100,0.1);
+            backdrop-filter: blur(5px);
+        }
+
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; }
+        .full-width { grid-column: span 2; }
+        .form-group { margin-bottom: 1.5rem; }
+
+        label {
+            display: block; font-family: 'Courier Prime', monospace;
+            font-size: 0.85rem; font-weight: bold; margin-bottom: 0.8rem;
+            color: var(--neon-primary); text-transform: uppercase; letter-spacing: 1px;
+        }
+
+        /* INPUTS Y SELECTS - ESTILO JULES/VB */
+        input, select, textarea {
+            width: 100%; padding: 1rem;
+            background: transparent;
+            border: 2px solid var(--text-muted);
+            color: var(--text-main);
+            font-family: 'Space Grotesk', monospace; /* FUENTE CORREGIDA */
+            font-size: 1rem;
+            border-radius: 0; outline: none; appearance: none;
+            transition: all 0.3s ease;
+        }
+
+        /* Corrección específica para opciones del select */
+        option { 
+            background-color: var(--bg-body); 
+            color: var(--text-main); 
+            font-family: 'Space Grotesk', monospace; 
+            padding: 10px;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            border-color: var(--text-main);
+            box-shadow: 4px 4px 0px 0px var(--neon-primary);
+        }
+
+        /* PRODUCTOS RECOMENDADOS */
+        #micro-segment-section, #product-recommendation {
+            display: none; margin-top: 1rem;
+            animation: fadeIn 0.5s ease forwards;
+        }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .product-card {
+            border: 1px dashed var(--text-main); padding: 1.5rem; margin-bottom: 1rem;
+            background: rgba(125,125,125,0.05); position: relative;
+        }
+        
+        .btn-lemon {
+            display: inline-block; width: 100%; margin-top: 1rem; padding: 0.8rem;
+            background: var(--text-main); color: var(--bg-body); text-align: center;
+            font-family: 'Archivo Black'; text-transform: uppercase; text-decoration: none;
+            transition: all 0.2s; border: 2px solid var(--text-main);
+        }
+        .btn-lemon:hover { 
+            background: transparent; color: var(--text-main); 
+            box-shadow: 4px 4px 0px 0px var(--neon-primary);
+        }
+
+        .submit-btn {
+            width: 100%; padding: 1.5rem; margin-top: 2rem;
+            background: var(--neon-primary); color: #000;
+            border: 2px solid var(--text-main);
+            font-family: 'Archivo Black'; font-size: 1.2rem; text-transform: uppercase;
+            cursor: pointer; transition: all 0.3s;
+        }
+        .submit-btn:hover {
+            background: var(--text-main); color: var(--bg-body);
+            box-shadow: 8px 8px 0px 0px var(--neon-primary);
+        }
+
+        /* FOOTER */
+        footer {
+            padding: 2rem; text-align: center; border-top: 1px solid var(--text-muted);
+            margin-top: 4rem; opacity: 0.6; font-family: 'Courier Prime'; font-size: 0.8rem;
+        }
+
+        /* RESPONSIVE (CORRECCIONES JULES) */
+        @media (max-width: 768px) {
+            .form-grid { grid-template-columns: 1fr; gap: 1rem; }
+            .full-width { grid-column: span 1; }
+            .vb-form-container { padding: 1.5rem; border-width: 2px; }
+            .protocol-title { font-size: 2rem; }
+            
+            /* En móvil desactivamos cursor custom para mejor UX */
+            .cursor-dot, .cursor-outline { display: none !important; }
+            * { cursor: auto !important; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="cursor-dot"></div><div class="cursor-outline"></div>
+    
+    <header>
+        <div class="logo"><a href="index.html" class="hover-target">VISUAL BLUEPRINT</a></div>
+        <div class="nav-actions">
+            <a href="index.html" class="hover-target" style="text-decoration:none; font-family:'Archivo Black'; color:var(--text-main); font-size: 1.2rem;">[X]</a>
+            <button id="theme-toggle" class="hover-target">🌙</button>
+        </div>
+    </header>
+
+    <section id="application-protocol">
+        <h1 class="protocol-title">Initiate Protocol</h1>
+        <p class="protocol-subtitle">/// COMPLETE DATA FOR SYSTEM ANALYSIS</p>
+
+        <div class="vb-form-container">
+            <form id="vb-form">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>> ID_CLIENTE</label>
+                        <input type="text" name="nombre" class="hover-target" placeholder="Tu Nombre" required>
+                    </div>
+                    <div class="form-group">
+                        <label>> ENTIDAD_MARCA</label>
+                        <input type="text" name="empresa" class="hover-target" placeholder="Tu Negocio" required>
+                    </div>
+                    <div class="form-group">
+                        <label>> ENLACE_EMAIL</label>
+                        <input type="email" name="email" class="hover-target" placeholder="email@..." required>
+                    </div>
+                    <div class="form-group">
+                        <label>> FRECUENCIA_TEL</label>
+                        <input type="tel" name="telefono" class="hover-target" placeholder="WhatsApp" required>
+                    </div>
+
+                    <div class="form-group full-width">
+                        <label>> PARAMETRO_INVERSION (TIER)</label>
+                        <select name="presupuesto_macro" id="macro-budget" class="hover-target" required>
+                            <option value="" disabled selected>Seleccionar Rango...</option>
+                            <option value="Menos de 1000 USD">[ TIER 3 ] Inicial (< $1k)</option>
+                            <option value="1000 a 3000 USD">[ TIER 2 ] Crecimiento ($1k - $3k)</option>
+                            <option value="Mas de 3000 USD">[ TIER 1 ] Escala (+$3k)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div id="micro-segment-section">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>> VECTOR_PROBLEMA</label>
+                            <select name="problema" id="problem-select" class="hover-target">
+                                <option value="Orden y CRM">Caos Operativo (CRM)</option>
+                                <option value="Web y Diseño">Invisibilidad (Web)</option>
+                                <option value="Automatizacion">Lentitud (Auto)</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>> AJUSTE_FINO</label>
+                            <select name="presupuesto_micro" id="micro-budget" class="hover-target">
+                                <option value="" disabled selected>Definir...</option>
+                                <option value="Bootstrapping">Bootstrapping (< $300)</option>
+                                <option value="Fast-Track">Fast-Track ($500 - $900)</option>
+                                <option value="Personalizado">Personalizado (+$1500)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div id="product-recommendation" class="full-width">
+                        <p style="font-family:'Courier Prime'; font-size:0.8rem; margin-bottom:1rem; color:var(--text-muted);">/// SYSTEM RECOMMENDATION DETECTED:</p>
+                        
+                        <div class="product-card">
+                            <strong style="display:block;">⚡ LAUNCHPAD OS [SYSTEM]</strong>
+                            <span style="font-size:0.9rem; color:var(--text-muted);">Infraestructura completa para escalar.</span>
+                            <a href="https://vbstudio.lemonsqueezy.com/checkout/buy/59e30eb4-5e1c-43bb-9e75-84f866025c2f" class="btn-lemon hover-target" target="_blank">DEPLOY ($50)</a>
+                        </div>
+
+                        <div class="product-card">
+                            <strong style="display:block;">📓 VISUAL CORE CRM [MODULE]</strong>
+                            <span style="font-size:0.9rem; color:var(--text-muted);">Gestión de clientes esencial.</span>
+                            <a href="https://vbstudio.lemonsqueezy.com/checkout/buy/dbde1d8d-d942-48cc-af1d-2b3ae8812804" class="btn-lemon hover-target" target="_blank">ACTIVATE ($29)</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group full-width" style="margin-top:1.5rem;">
+                    <label>> DATOS_ADICIONALES</label>
+                    <textarea name="mensaje" rows="3" class="hover-target" placeholder="Detalles del proyecto..."></textarea>
+                </div>
+
+                <button type="submit" id="submit-btn" class="submit-btn hover-target">TRANSMIT DATA</button>
+            </form>
+        </div>
+    </section>
+
+    <footer>
+        VISUAL BLUEPRINT STUDIO © 2026 // SYSTEM SECURE
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            
+            // 1. LENIS SCROLL (Suavidad)
+            try {
+                const lenis = new Lenis({
+                    duration: 1.2,
+                    easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+                    direction: 'vertical',
+                    smooth: true
+                });
+                function raf(time) {
+                    lenis.raf(time);
+                    requestAnimationFrame(raf);
+                }
+                requestAnimationFrame(raf);
+            } catch(e) { console.log("Lenis init skipped"); }
+
+            // 2. CURSOR LOGIC (El alma de VB Studio)
+            // Solo se activa si la ventana es mayor a 768px para no molestar en móvil
+            if (window.innerWidth > 768) {
+                const cursorDot = document.querySelector('.cursor-dot');
+                const cursorOutline = document.querySelector('.cursor-outline');
+                
+                window.addEventListener('mousemove', (e) => {
+                    const x = e.clientX;
+                    const y = e.clientY;
+                    
+                    // Movimiento directo del punto
+                    if(cursorDot) {
+                        cursorDot.style.left = `${x}px`;
+                        cursorDot.style.top = `${y}px`;
+                    }
+                    
+                    // Movimiento con delay del outline (efecto magnético)
+                    if(cursorOutline) {
+                        cursorOutline.animate({
+                            left: `${x}px`,
+                            top: `${y}px`
+                        }, { duration: 500, fill: "forwards" });
+                    }
+                });
+
+                // Efecto Hover en elementos interactivos
+                document.querySelectorAll('.hover-target').forEach(el => {
+                    el.addEventListener('mouseenter', () => document.body.classList.add('hovering'));
+                    el.addEventListener('mouseleave', () => document.body.classList.remove('hovering'));
+                });
+            }
+
+            // 3. THEME TOGGLE (Dark/Light)
+            const toggleButton = document.getElementById('theme-toggle');
+            const htmlElement = document.documentElement;
+            if(toggleButton) {
+                toggleButton.addEventListener('click', (e) => {
+                    e.preventDefault(); // Evitar saltos
+                    const current = htmlElement.getAttribute('data-theme');
+                    const next = current === 'dark' ? 'light' : 'dark';
+                    htmlElement.setAttribute('data-theme', next);
+                    toggleButton.textContent = next === 'dark' ? '☀️' : '🌙';
+                });
+            }
+
+            // 4. LÓGICA DEL FORMULARIO (VB LOGIC)
+            const macroBudget = document.getElementById('macro-budget');
+            const microSection = document.getElementById('micro-segment-section');
+            const microBudget = document.getElementById('micro-budget');
+            const productBox = document.getElementById('product-recommendation');
+            const form = document.getElementById('vb-form');
+            const btn = document.getElementById('submit-btn');
+
+            if(macroBudget) {
+                macroBudget.addEventListener('change', (e) => {
+                    if (e.target.value === 'Menos de 1000 USD') {
+                        microSection.style.display = 'block';
+                        document.getElementById('problem-select').required = true;
+                        document.getElementById('micro-budget').required = true;
+                    } else {
+                        microSection.style.display = 'none';
+                        productBox.style.display = 'none';
+                        document.getElementById('problem-select').required = false;
+                        document.getElementById('micro-budget').required = false;
+                    }
+                });
+            }
+
+            if(microBudget) {
+                microBudget.addEventListener('change', (e) => {
+                    if (e.target.value === 'Bootstrapping') productBox.style.display = 'block';
+                    else productBox.style.display = 'none';
+                });
+            }
+
+            // 5. ENVÍO A N8N
+            if(form) {
+                form.addEventListener('submit', async (e) => {
+                    e.preventDefault();
+                    const originalText = btn.innerText;
+                    btn.innerText = ">>> PROCESSING... <<<";
+                    btn.style.opacity = "0.7";
+
+                    const formData = new FormData(form);
+                    const data = Object.fromEntries(formData.entries());
+                    
+                    const webhookURL = 'https://n8n-production-02ef.up.railway.app/webhook/cliente'; 
+
+                    try {
+                        await fetch(webhookURL, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(data)
+                        });
+                        
+                        document.querySelector('.vb-form-container').innerHTML = `
+                            <div style="text-align:center; padding:2rem;">
+                                <h2 style="font-size:3rem; margin-bottom:1rem; color:var(--neon-primary);">✅</h2>
+                                <h3 style="font-family:'Archivo Black';">TRANSMISSION COMPLETE</h3>
+                                <p style="font-family:'Courier Prime'; color:var(--text-muted); margin-top:1rem;">
+                                    Our systems are analyzing your data.<br>Check your inbox shortly.
+                                </p>
+                                <a href="index.html" class="btn-lemon" style="margin-top:2rem; display:inline-block; width:auto; padding:1rem 2rem;">RETURN TO BASE</a>
+                            </div>
+                        `;
+                    } catch (error) {
+                        alert("Error de conexión. Intente nuevamente.");
+                        btn.innerText = originalText;
+                        btn.style.opacity = "1";
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>
