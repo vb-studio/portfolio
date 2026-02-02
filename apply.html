@@ -12,7 +12,7 @@
 
     <style>
         /* =========================================
-           VARIABLES
+           VARIABLES DE SISTEMA
            ========================================= */
         :root {
             --bg-body: #F0F0F0;
@@ -68,15 +68,12 @@
            ARTEFACTOS (CURSOR + SPOTLIGHT)
            ========================================= */
         
-        /* 1. La Luz de Fondo (Spotlight) */
         #spotlight {
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
             pointer-events: none; z-index: -1;
-            /* Gradiente radial que sigue a las variables --x e --y */
             background: radial-gradient(800px circle at var(--x) var(--y), rgba(255, 77, 77, 0.06), transparent 50%);
         }
 
-        /* 2. El Cursor */
         .cursor-dot, .cursor-outline {
             position: fixed; top: 0; left: 0; transform: translate(-50%, -50%);
             border-radius: 50%; z-index: 9999; pointer-events: none;
@@ -175,17 +172,12 @@
         }
 
         /* DINÁMICOS */
-        #micro-segment-section, #product-recommendation {
+        #micro-segment-section {
             display: none; margin-top: 1rem;
             animation: fadeIn 0.5s ease forwards;
         }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        .product-card {
-            border: 1px dashed var(--text-main); padding: 1.5rem; margin-bottom: 1rem;
-            background: rgba(125,125,125,0.05); position: relative;
-        }
-        
         .btn-lemon {
             display: inline-block; width: 100%; margin-top: 1rem; padding: 0.8rem;
             background: var(--text-main); color: var(--bg-body); text-align: center;
@@ -219,7 +211,7 @@
             .full-width { grid-column: span 1; }
             .vb-form-container { padding: 1.5rem; border-width: 2px; }
             .protocol-title { font-size: 2rem; }
-            .cursor-dot, .cursor-outline, #spotlight { display: none !important; } /* Desactivar efectos pesados en móvil */
+            .cursor-dot, .cursor-outline, #spotlight { display: none !important; }
             * { cursor: auto !important; }
         }
     </style>
@@ -292,22 +284,6 @@
                             </select>
                         </div>
                     </div>
-
-                    <div id="product-recommendation" class="full-width">
-                        <p style="font-family:'Courier Prime'; font-size:0.8rem; margin-bottom:1rem; color:var(--text-muted);">/// SYSTEM RECOMMENDATION DETECTED:</p>
-                        
-                        <div class="product-card">
-                            <strong style="display:block;">⚡ LAUNCHPAD OS [SYSTEM]</strong>
-                            <span style="font-size:0.9rem; color:var(--text-muted);">Infraestructura completa para escalar.</span>
-                            <a href="https://vbstudio.lemonsqueezy.com/checkout/buy/59e30eb4-5e1c-43bb-9e75-84f866025c2f" class="btn-lemon hover-target" target="_blank">DEPLOY ($50)</a>
-                        </div>
-
-                        <div class="product-card">
-                            <strong style="display:block;">📓 VISUAL CORE CRM [MODULE]</strong>
-                            <span style="font-size:0.9rem; color:var(--text-muted);">Gestión de clientes esencial.</span>
-                            <a href="https://vbstudio.lemonsqueezy.com/checkout/buy/dbde1d8d-d942-48cc-af1d-2b3ae8812804" class="btn-lemon hover-target" target="_blank">ACTIVATE ($29)</a>
-                        </div>
-                    </div>
                 </div>
 
                 <div class="form-group full-width" style="margin-top:1.5rem;">
@@ -334,21 +310,18 @@
                 requestAnimationFrame(raf);
             } catch(e) {}
 
-            // 2. CURSOR + SPOTLIGHT (La magia)
+            // 2. CURSOR + SPOTLIGHT
             if (window.innerWidth > 768) {
                 const cursorDot = document.querySelector('.cursor-dot');
                 const cursorOutline = document.querySelector('.cursor-outline');
-                // IMPORTANTE: Aquí pasamos las variables --x e --y al documento para que el #spotlight funcione
                 
                 window.addEventListener('mousemove', (e) => {
                     const x = e.clientX;
                     const y = e.clientY;
                     
-                    // Actualizar CSS Variables para el Spotlight
                     document.documentElement.style.setProperty('--x', x + 'px');
                     document.documentElement.style.setProperty('--y', y + 'px');
 
-                    // Mover Cursor
                     if(cursorDot) { cursorDot.style.left = `${x}px`; cursorDot.style.top = `${y}px`; }
                     if(cursorOutline) { cursorOutline.animate({ left: `${x}px`, top: `${y}px` }, { duration: 500, fill: "forwards" }); }
                 });
@@ -372,11 +345,9 @@
                 });
             }
 
-            // 4. LOGICA FORMULARIO
+            // 4. LÓGICA DEL FORMULARIO
             const macroBudget = document.getElementById('macro-budget');
             const microSection = document.getElementById('micro-segment-section');
-            const microBudget = document.getElementById('micro-budget');
-            const productBox = document.getElementById('product-recommendation');
             const form = document.getElementById('vb-form');
             const btn = document.getElementById('submit-btn');
 
@@ -388,25 +359,18 @@
                         document.getElementById('micro-budget').required = true;
                     } else {
                         microSection.style.display = 'none';
-                        productBox.style.display = 'none';
                         document.getElementById('problem-select').required = false;
                         document.getElementById('micro-budget').required = false;
                     }
                 });
             }
-            if(microBudget) {
-                microBudget.addEventListener('change', (e) => {
-                    if (e.target.value === 'Bootstrapping') productBox.style.display = 'block';
-                    else productBox.style.display = 'none';
-                });
-            }
 
-            // 5. ENVIO DATOS
+            // 5. ENVIO A N8N (Mensaje de Éxito actualizado)
             if(form) {
                 form.addEventListener('submit', async (e) => {
                     e.preventDefault();
                     const originalText = btn.innerText;
-                    btn.innerText = ">>> PROCESSING... <<<";
+                    btn.innerText = ">>> ANALYZING PROFILE... <<<";
                     btn.style.opacity = "0.7";
 
                     const formData = new FormData(form);
@@ -423,9 +387,12 @@
                         document.querySelector('.vb-form-container').innerHTML = `
                             <div style="text-align:center; padding:2rem;">
                                 <h2 style="font-size:3rem; margin-bottom:1rem; color:var(--neon-primary);">✅</h2>
-                                <h3 style="font-family:'Archivo Black';">TRANSMISSION COMPLETE</h3>
-                                <p style="font-family:'Courier Prime'; color:var(--text-muted); margin-top:1rem;">
-                                    Our systems are analyzing your data.<br>Check your inbox shortly.
+                                <h3 style="font-family:'Archivo Black';">PROFILE ANALYZED</h3>
+                                <p style="font-family:'Courier Prime'; color:var(--text-main); margin-top:1rem; font-weight:bold;">
+                                    The system has generated a protocol for your tier.
+                                </p>
+                                <p style="font-family:'Courier Prime'; color:var(--text-muted); font-size: 0.9rem; margin-top: 5px;">
+                                    Access granted. Please check your email inbox immediately.
                                 </p>
                                 <a href="index.html" class="btn-lemon" style="margin-top:2rem; display:inline-block; width:auto; padding:1rem 2rem;">RETURN TO BASE</a>
                             </div>
