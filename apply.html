@@ -259,37 +259,28 @@
                     </div>
 
                     <div class="form-group full-width">
-                        <label>> PARAMETRO_INVERSION (TIER)</label>
-                        <select name="presupuesto_macro" id="macro-budget" class="hover-target" required>
-                            <option value="" disabled selected>Seleccionar Rango...</option>
-                            <option value="Menos de 1000 USD">[ TIER 3 ] Inicial (< $1k)</option>
-                            <option value="1000 a 3000 USD">[ TIER 2 ] Crecimiento ($1k - $3k)</option>
-                            <option value="Mas de 3000 USD">[ TIER 1 ] Escala (+$3k)</option>
-                        </select>
-                    </div>
-                </div>
+    <label>> NIVEL_INFRAESTRUCTURA (TIER)</label>
+    <select name="budget" id="budget" class="hover-target" required>
+        <option value="" disabled selected>Seleccionar Rango...</option>
+        
+        <option value="tier1">Tier 1 • Kit Inicio ( DIY < $300 )</option>
+        <option value="tier2">Tier 2 • Despliegue Rápido ( $500 - $900 )</option>
+        <option value="tier3">Tier 3 • Smart Entry ( $1k - $1.5k )</option>
+        <option value="tier4">Tier 4 • Pro System ( $1.8k - $3k )</option>
+        <option value="tier5">Tier 5 • Partner Ecosystem ( +$3k )</option>
+    </select>
+</div>
 
-                <div id="micro-segment-section">
-                    <div class="form-grid">
-                        <div class="form-group">
-                            <label>> VECTOR_PROBLEMA</label>
-                            <select name="problema" id="problem-select" class="hover-target">
-                                <option value="Orden y CRM">Caos Operativo (CRM)</option>
-                                <option value="Web y Diseño">Invisibilidad (Web)</option>
-                                <option value="Automatizacion">Lentitud (Auto)</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label>> AJUSTE_FINO</label>
-                            <select name="presupuesto_micro" id="micro-budget" class="hover-target">
-                                <option value="" disabled selected>Definir...</option>
-                                <option value="Bootstrapping">Bootstrapping (< $300)</option>
-                                <option value="Fast-Track">Fast-Track ($500 - $900)</option>
-                                <option value="Personalizado">Personalizado (+$1500)</option>
-                            </select>
-                        </div>
-                    </div>
-                </div>
+<div class="form-group full-width">
+    <label>> VECTOR_PROBLEMA</label>
+    <select name="problema" id="problem-select" class="hover-target" required>
+        <option value="" disabled selected>¿Qué necesitas resolver?</option>
+        <option value="Orden y CRM">Caos Operativo (Necesito CRM)</option>
+        <option value="Web y Diseño">Invisibilidad (Necesito Web)</option>
+        <option value="Automatizacion">Lentitud (Necesito Automatizar)</option>
+        <option value="Todo">Infraestructura Completa</option>
+    </select>
+</div>
 
                 <div class="form-group full-width" style="margin-top:1.5rem;">
                     <label>> DATOS_ADICIONALES</label>
@@ -413,4 +404,5 @@
     </script>
 </body>
 </html>
+
 
