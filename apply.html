@@ -341,26 +341,6 @@
                 });
             }
 
-            // 4. LÓGICA DEL FORMULARIO
-            const macroBudget = document.getElementById('macro-budget');
-            const microSection = document.getElementById('micro-segment-section');
-            const form = document.getElementById('vb-form');
-            const btn = document.getElementById('submit-btn');
-
-            if(macroBudget) {
-                macroBudget.addEventListener('change', (e) => {
-                    if (e.target.value === 'Menos de 1000 USD') {
-                        microSection.style.display = 'block';
-                        document.getElementById('problem-select').required = true;
-                        document.getElementById('micro-budget').required = true;
-                    } else {
-                        microSection.style.display = 'none';
-                        document.getElementById('problem-select').required = false;
-                        document.getElementById('micro-budget').required = false;
-                    }
-                });
-            }
-
             // 5. ENVIO A N8N (Mensaje de Éxito actualizado)
             if(form) {
                 form.addEventListener('submit', async (e) => {
@@ -404,5 +384,6 @@
     </script>
 </body>
 </html>
+
 
 
