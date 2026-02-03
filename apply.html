@@ -298,6 +298,10 @@
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             
+            // --- 0. DEFINICIONES CRÍTICAS (ESTO FALTABA) ---
+            const form = document.getElementById('vb-form');
+            const btn = document.getElementById('submit-btn');
+            
             // 1. LENIS SCROLL
             try {
                 const lenis = new Lenis({ duration: 1.2, easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)), direction: 'vertical', smooth: true });
@@ -305,7 +309,7 @@
                 requestAnimationFrame(raf);
             } catch(e) {}
 
-            // 2. CURSOR + SPOTLIGHT
+            // 2. CURSOR + SPOTLIGHT (Solo Desktop)
             if (window.innerWidth > 768) {
                 const cursorDot = document.querySelector('.cursor-dot');
                 const cursorOutline = document.querySelector('.cursor-outline');
@@ -327,7 +331,7 @@
                 });
             }
 
-            // 3. THEME
+            // 3. THEME TOGGLE
             const toggleButton = document.getElementById('theme-toggle');
             const htmlElement = document.documentElement;
             if(toggleButton) {
@@ -340,47 +344,59 @@
                 });
             }
 
-            // 5. ENVIO A N8N (Mensaje de Éxito actualizado)
-            if(form) {
+            // 5. ENVIO A N8N (AHORA SÍ FUNCIONA)
+            if(form && btn) { // Verificamos que existan antes de usarlos
                 form.addEventListener('submit', async (e) => {
+                    // 🛑 FRENAMOS LA RECARGA
                     e.preventDefault();
+                    
+                    // Feedback visual
                     const originalText = btn.innerText;
                     btn.innerText = ">>> ANALYZING PROFILE... <<<";
                     btn.style.opacity = "0.7";
+                    btn.disabled = true; // Evitar doble clic
 
                     const formData = new FormData(form);
                     const data = Object.fromEntries(formData.entries());
+                    
+                    // TU URL DE PRODUCCIÓN
                     const webhookURL = 'https://n8n-production-02ef.up.railway.app/webhook/cliente'; 
 
                     try {
-                        await fetch(webhookURL, {
+                        const response = await fetch(webhookURL, {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify(data)
                         });
                         
-                        document.querySelector('.vb-form-container').innerHTML = `
-                            <div style="text-align:center; padding:2rem;">
-                                <h2 style="font-size:3rem; margin-bottom:1rem; color:var(--neon-primary);">✅</h2>
-                                <h3 style="font-family:'Archivo Black';">PROFILE ANALYZED</h3>
-                                <p style="font-family:'Courier Prime'; color:var(--text-main); margin-top:1rem; font-weight:bold;">
-                                    The system has generated a protocol for your tier.
-                                </p>
-                                <p style="font-family:'Courier Prime'; color:var(--text-muted); font-size: 0.9rem; margin-top: 5px;">
-                                    Access granted. Please check your email inbox immediately.
-                                </p>
-                                <a href="index.html" class="btn-lemon" style="margin-top:2rem; display:inline-block; width:auto; padding:1rem 2rem;">RETURN TO BASE</a>
-                            </div>
-                        `;
+                        // Si n8n responde OK (status 200)
+                        if (response.ok) {
+                            document.querySelector('.vb-form-container').innerHTML = `
+                                <div style="text-align:center; padding:2rem;">
+                                    <h2 style="font-size:3rem; margin-bottom:1rem; color:var(--neon-primary);">✅</h2>
+                                    <h3 style="font-family:'Archivo Black';">PROFILE ANALYZED</h3>
+                                    <p style="font-family:'Courier Prime'; color:var(--text-main); margin-top:1rem; font-weight:bold;">
+                                        The system has generated a protocol for your tier.
+                                    </p>
+                                    <p style="font-family:'Courier Prime'; color:var(--text-muted); font-size: 0.9rem; margin-top: 5px;">
+                                        Access granted. Please check your email inbox immediately.
+                                    </p>
+                                    <a href="index.html" class="btn-lemon" style="margin-top:2rem; display:inline-block; width:auto; padding:1rem 2rem;">RETURN TO BASE</a>
+                                </div>
+                            `;
+                        } else {
+                            throw new Error('Error en el servidor');
+                        }
+
                     } catch (error) {
-                        alert("Error de conexión. Intente nuevamente.");
+                        console.error(error);
+                        alert("Error de conexión con el servidor. Intente nuevamente.");
                         btn.innerText = originalText;
                         btn.style.opacity = "1";
+                        btn.disabled = false;
                     }
                 });
             }
         });
     </script>
-</body>
-</html>
 
