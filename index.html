@@ -509,7 +509,113 @@
                 height: auto !important;
                 overflow: visible !important;
             }
+        } 
+/* =========================================
+           NUEVO CSS: DUAL ENGINE & TIERS (VB SYSTEMS)
+           ========================================= */
+        
+        /* ENGINE SECTION (Reemplaza Process) */
+        .dual-engine-wrapper {
+            display: grid; grid-template-columns: 1fr 0.1fr 1fr; gap: 0;
+            border: 2px solid var(--text-main); width: 100%; position: relative;
         }
+        .engine-side {
+            padding: 4rem 3rem; display: flex; flex-direction: column; justify-content: space-between;
+            transition: background 0.3s; position: relative; overflow: hidden;
+        }
+        .engine-side:hover { background: var(--text-main); color: var(--bg-body) !important; }
+        .engine-side:hover * { color: var(--bg-body) !important; border-color: var(--bg-body) !important; }
+        .engine-side:hover .tech-tag { border-color: var(--bg-body); }
+        
+        .connector-line {
+            background: var(--text-main); width: 2px; height: 100%; margin: 0 auto;
+            position: relative; display: flex; align-items: center; justify-content: center;
+        }
+        .connector-icon {
+            background: var(--bg-body); border: 2px solid var(--text-main); color: var(--text-main);
+            width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            font-family: 'Courier Prime'; font-weight: bold; z-index: 2;
+        }
+
+        .engine-icon { font-size: 3rem; margin-bottom: 2rem; display: block; }
+        .engine-title { font-family: 'Archivo Black'; font-size: 2.5rem; line-height: 0.9; margin-bottom: 1.5rem; text-transform: uppercase; }
+        .engine-desc { font-family: 'Space Grotesk'; font-size: 1.1rem; margin-bottom: 2rem; opacity: 0.8; }
+        .engine-specs { list-style: none; font-family: 'Courier Prime'; font-size: 0.9rem; border-top: 1px dotted var(--text-main); padding-top: 1rem; }
+        .engine-specs li { margin-bottom: 0.5rem; display: flex; justify-content: space-between; }
+
+        /* TIER SHOWCASE (Reemplaza Work) */
+        .tiers-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem; width: 100%; align-items: stretch; }
+        .tier-card {
+            border: 2px solid var(--text-main); padding: 3rem 2rem; display: flex; flex-direction: column;
+            background: transparent; transition: transform 0.3s, box-shadow 0.3s; position: relative;
+        }
+        .tier-card:hover { transform: translateY(-10px); box-shadow: 8px 8px 0px 0px var(--neon-primary); }
+        
+        /* Highlight para el Tier Central */
+        .tier-card.featured { border-color: var(--text-main); background: rgba(var(--text-main), 0.02); }
+        .tier-card.featured::before {
+            content: 'MOST WANTED'; position: absolute; top: 0; right: 0; background: var(--neon-primary);
+            color: #000; font-family: 'Courier Prime'; font-size: 0.7rem; padding: 4px 8px; font-weight: bold;
+        }
+
+        .tier-header { border-bottom: 2px solid var(--text-main); padding-bottom: 1.5rem; margin-bottom: 1.5rem; }
+        .tier-price { font-family: 'Archivo Black'; font-size: 3rem; line-height: 1; margin-bottom: 0.5rem; }
+        .tier-price span { font-size: 1rem; font-family: 'Courier Prime'; vertical-align: middle; }
+        .tier-name { font-family: 'Courier Prime'; font-weight: bold; color: var(--neon-primary); letter-spacing: 1px; }
+
+        .tier-features { list-style: none; margin-bottom: 2rem; flex-grow: 1; }
+        .tier-features li { 
+            font-family: 'Space Grotesk'; font-size: 1rem; margin-bottom: 1rem; 
+            padding-left: 1.5rem; position: relative; color: var(--text-muted); 
+        }
+        .tier-features li::before { content: '>'; position: absolute; left: 0; color: var(--neon-primary); font-family: 'Courier Prime'; }
+        
+        .tier-btn { width: 100%; text-align: center; margin-top: auto; }
+
+        /* Mobile Adjustments para Tiers y Engine */
+        @media (max-width: 1024px) {
+            .dual-engine-wrapper { grid-template-columns: 1fr; grid-template-rows: auto auto auto; border: none; gap: 2rem; }
+            .engine-side { border: 2px solid var(--text-main); }
+            .connector-line { width: 100%; height: 2px; margin: 1rem 0; display: none; } /* Ocultar conector en movil */
+            .tiers-grid { grid-template-columns: 1fr; gap: 3rem; }
+        }
+
+        /* TERMINAL MANIFESTO STYLE */
+        .terminal-wrapper {
+            background: #000; color: #0f0; /* Verde Hacker por defecto */
+            font-family: 'Courier Prime', monospace;
+            padding: 0; border-radius: 8px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            width: 100%; max-width: 800px; margin: 0 auto;
+            border: 1px solid #333; overflow: hidden;
+            text-align: left; /* Alineación izquierda obligatoria para consola */
+        }
+        
+        /* Ajuste para modo light: que la terminal siga siendo oscura */
+        [data-theme="light"] .terminal-wrapper { border: 1px solid #ccc; box-shadow: 10px 10px 0px 0px rgba(0,0,0,0.1); }
+
+        .terminal-header {
+            background: #1a1a1a; padding: 10px 15px;
+            display: flex; gap: 8px; align-items: center; border-bottom: 1px solid #333;
+        }
+        .dot { width: 12px; height: 12px; border-radius: 50%; display: inline-block; }
+        .red { background: #ff5f56; } .yellow { background: #ffbd2e; } .green { background: #27c93f; }
+        .terminal-title { color: #888; font-size: 0.8rem; margin-left: 10px; opacity: 0.7; }
+
+        .terminal-body { padding: 2rem; }
+        .cmd { color: #fff; margin-bottom: 1rem; }
+        .output { color: #aaa; line-height: 1.6; font-size: 1rem; }
+        
+        .highlight { color: var(--neon-primary); font-weight: bold; }
+        .success { color: #27c93f; font-weight: bold; }
+        .dim { opacity: 0.5; font-size: 0.8rem; }
+        .white { color: #fff; font-weight: bold; border-bottom: 1px dotted #666; }
+
+        .blink { animation: blinker 1s linear infinite; font-weight: bold; color: var(--neon-primary); }
+        @keyframes blinker { 50% { opacity: 0; } }
+
+        /* Ajuste de Texto para el #about */
+        #about p { max-width: 100%; text-align: left; margin: 0; }
 
     </style>
 </head>
@@ -555,7 +661,7 @@
     </div>
 
     <section id="servicios">
-        <h2 class="reveal">CAPACIDADES TÉCNICAS</h2>
+        <h2 class="reveal">OPERATIONAL PROTOCOLS</h2>
         <div class="services-grid">
             <div class="service-card reveal reveal-delay-1 hover-target">
                 <div class="service-visual"><div class="v-radar"></div></div>
@@ -565,7 +671,7 @@
             <div class="service-card reveal reveal-delay-2 hover-target">
                 <div class="service-visual"><div class="v-grid-box"></div><div class="v-grid-box" style="background: var(--neon-primary);"></div><div class="v-grid-box"></div></div>
                 <h3>02. INGENIERÍA</h3>
-                <p>Webs Neo-Brutalistas que retienen. Diseño que no distrae, convierte. Interfaces que construyen confianza.</p>
+                <p>Interfaces de Alta Fidelidad. Diseño que no distrae, convierte. Estética que construye autoridad inmediata.</p>
             </div>
             <div class="service-card reveal reveal-delay-3 hover-target">
                 <div class="service-visual v-flow"><div class="v-node"></div><div class="v-line"></div><div class="v-node highlight"></div><div class="v-line"></div><div class="v-node"></div></div>
@@ -576,99 +682,120 @@
     </section>
 
     <section id="proceso">
-        <h2 class="reveal">SYSTEM LOGIC // THE PROCESS</h2>
+        <h2 class="reveal">THE INFRASTRUCTURE // DUAL ENGINE</h2>
         
-        <div class="process-wrapper reveal reveal-delay-1">
+        <div class="dual-engine-wrapper reveal reveal-delay-1">
             
-            <div class="step-item hover-target">
-                <div class="step-header">
-                    <span class="step-num">[01]</span>
-                    <span class="step-icon">///</span>
-                </div>
+            <div class="engine-side hover-target">
                 <div>
-                    <h3>STRUCTURAL<br>DIAGNOSTIC</h3>
-                    <p>Analizamos la fricción actual de tu marca con precisión quirúrgica. No hay conjeturas; auditamos tu infraestructura actual para definir los activos visuales que tu modelo de negocio exige para escalar.</p>
+                    <span class="engine-icon">📦</span>
+                    <h3 class="engine-title">GITHUB<br>VISUALS</h3>
+                    <p class="engine-desc">El cuerpo del sistema. Infraestructura de código puro alojada en repositorios privados. Sin constructores lentos (Wix/WP). Velocidad de carga instantánea que Google premia.</p>
                 </div>
+                <ul class="engine-specs">
+                    <li><span>DEPLOYMENT:</span> <span>GITHUB PAGES</span></li>
+                    <li><span>LATENCIA:</span> <span>0.02ms</span></li>
+                    <li><span>SEGURIDAD:</span> <span>STATIC BLINDADO</span></li>
+                </ul>
             </div>
 
-            <div class="step-item hover-target">
-                <div class="step-header">
-                    <span class="step-num">[02]</span>
-                    <span class="step-icon">:::</span>
-                </div>
-                <div>
-                    <h3>THE BLUEPRINT<br>PROTOCOL</h3>
-                    <p>Transformamos la lógica de negocio en un ecosistema visual tangible. Diseñamos los planos y esquemas exactos (wireframes & visual systems) que convertirán tu autoridad en un activo monetizable.</p>
-                </div>
+            <div class="connector-line">
+                <div class="connector-icon">+</div>
             </div>
 
-            <div class="step-item hover-target">
-                <div class="step-header">
-                    <span class="step-num">[03]</span>
-                    <span class="step-icon">+++</span>
-                </div>
+            <div class="engine-side hover-target">
                 <div>
-                    <h3>ASSET<br>ENGINEERING</h3>
-                    <p>Ejecución técnica con estándares de alta fidelidad. Construimos y desplegamos cada pieza del sistema con un único propósito: eliminar el ruido y acelerar la confianza del mercado. Cero latencia, máximo impacto.</p>
+                    <span class="engine-icon">⚡</span>
+                    <h3 class="engine-title">N8N<br>SYSTEMS</h3>
+                    <p class="engine-desc">El cerebro líquido. Automatización backend invisible que conecta tu web estática con el mundo real. Captura leads, agenda citas y gestiona datos mientras duermes.</p>
                 </div>
-            </div>
-
-            <div class="step-item hover-target">
-                <div class="step-header">
-                    <span class="step-num">[04]</span>
-                    <span class="step-icon">>>></span>
-                </div>
-                <div>
-                    <h3>SYSTEM<br>INTEGRATION</h3>
-                    <p>Entrega del ecosistema completo listo para operar (Fricción Cero). Recibes una biblioteca sistematizada y documentación técnica para que tu equipo implemente la nueva identidad con autonomía total.</p>
-                </div>
+                <ul class="engine-specs">
+                    <li><span>LOGIC:</span> <span>NODE WORKFLOWS</span></li>
+                    <li><span>CONEXIÓN:</span> <span>WEBHOOKS / API</span></li>
+                    <li><span>OPERACIÓN:</span> <span>24/7 AUTOPILOT</span></li>
+                </ul>
             </div>
 
         </div>
     </section>
 
     <section id="work">
-        <div class="work-grid">
-            <article class="work-card reveal hover-target">
-                <div class="work-content">
-                    <span style="font-family:'Courier Prime'; color:var(--neon-primary); font-weight:bold;">CASE 01 // ACQUISITION PROTOCOL</span>
-                    <div class="tags-container" style="margin-top: 1rem;"><span class="tech-tag">HUBSPOT CRM</span><span class="tech-tag">N8N AUTOMATION</span></div>
-                    <h3>INFRAESTRUCTURA DE CAPTACIÓN B2B</h3>
-                    <p>Sistema visual que nutre leads automáticamente mientras usted duerme. Integración total CRM. Velocity Lead: +45%.</p>
-                    <a href="#" class="work-link hover-target">ANALIZAR FLUJO &rarr;</a>
+        <h2 class="reveal">DEPLOYMENT OPTIONS // TIERS</h2>
+        
+        <div class="tiers-grid">
+            
+            <article class="tier-card reveal reveal-delay-1 hover-target">
+                <div class="tier-header">
+                    <p class="tier-name">THE STARTER KIT</p>
+                    <h3 class="tier-price">$297<span>/one-time</span></h3>
                 </div>
-                <div class="work-image parallax-container"><img src="caso1.png" alt="Caso 1" class="parallax-img"></div>
+                <ul class="tier-features">
+                    <li><strong>GitHub Micro-Web</strong> (One Page)</li>
+                    <li>Portafolio de Carga Instantánea</li>
+                    <li>Bot de Notificación Telegram</li>
+                    <li>Código fuente entregado (Zip)</li>
+                    <li>Guía de Auto-Instalación</li>
+                </ul>
+                <a href="#contacto" class="cta-button secondary tier-btn magnetic-btn">INITIATE</a>
             </article>
-            <article class="work-card reveal hover-target">
-                <div class="work-content">
-                    <span style="font-family:'Courier Prime'; color:var(--neon-primary); font-weight:bold;">CASE 02 // AUTHORITY COMMAND</span>
-                    <div class="tags-container" style="margin-top: 1rem;"><span class="tech-tag">DATA VIZ</span><span class="tech-tag">BRANDING</span></div>
-                    <h3>CENTRO DE COMANDO FINANCIERO</h3>
-                    <p>Interfaz de control para C-Levels. Transforma excel complejos en decisiones de 3 segundos. Visibilidad de Mercado: 3X.</p>
-                    <a href="#" class="work-link hover-target">VER LÓGICA DEL SISTEMA &rarr;</a>
+
+            <article class="tier-card featured reveal reveal-delay-2 hover-target">
+                <div class="tier-header">
+                    <p class="tier-name">THE BUSINESS</p>
+                    <h3 class="tier-price">$1,200<span>/setup</span></h3>
                 </div>
-                <div class="work-image parallax-container"><img src="caso2.png" alt="Caso 2" class="parallax-img"></div>
+                <ul class="tier-features">
+                    <li><strong>Landing Page de Ventas</strong> (High Conv.)</li>
+                    <li>Estrategia de Copywriting</li>
+                    <li><strong>Sistema de Captura (n8n)</strong></li>
+                    <li>Base de Datos en Notion/Sheets</li>
+                    <li>Email de Respuesta Automática</li>
+                    <li>Soporte de Puesta en Marcha</li>
+                </ul>
+                <a href="#contacto" class="cta-button tier-btn magnetic-btn" style="background:var(--text-main); color:var(--bg-body)!important;">SCALE NOW</a>
             </article>
-            <article class="work-card reveal hover-target">
-                <div class="work-content">
-                    <span style="font-family:'Courier Prime'; color:var(--neon-primary); font-weight:bold;">CASE 03 // RETENTION ENGINE</span>
-                    <div class="tags-container" style="margin-top: 1rem;"><span class="tech-tag">SAAS UX/UI</span><span class="tech-tag">CHURN REDUCTION</span></div>
-                    <h3>PROTOCOLO DE RETENCIÓN VISUAL</h3>
-                    <p>Rediseño de UX enfocado en reducir el Churn Rate y aumentar el LTV del usuario. Pipeline Generado: +$150K.</p>
-                    <a href="#" class="work-link hover-target">VER MÉTRICAS &rarr;</a>
+
+            <article class="tier-card reveal reveal-delay-3 hover-target">
+                <div class="tier-header">
+                    <p class="tier-name">THE EMPIRE</p>
+                    <h3 class="tier-price">CUSTOM<span>/project</span></h3>
                 </div>
-                <div class="work-image parallax-container"><img src="caso3.png" alt="Caso 3" class="parallax-img"></div>
+                <ul class="tier-features">
+                    <li><strong>Web App / Ecosistema Completo</strong></li>
+                    <li>Agentes de IA Entrenados</li>
+                    <li>Integración CRM</li>
+                    <li>Dashboard de Métricas en Vivo</li>
+                    <li>Auditoría de Procesos</li>
+                    <li>Mantenimiento Prioritario</li>
+                </ul>
+                <a href="#contacto" class="cta-button secondary tier-btn magnetic-btn">CONTACT</a>
             </article>
+
         </div>
     </section>
 
     <section id="about" class="reveal">
-        <h2>MANIFIESTO</h2>
-        <article>
-            <p>La mayoría de las agencias te venden "diseño bonito". <strong>Eso no paga las facturas.</strong> Tu problema no es que tu web sea fea; tu problema es que es invisible y no genera confianza.</p>
-            <p>Soy Jere, y no soy un "diseñador gráfico". Soy un <strong>Visual Architect</strong> certificado en Metodología Inbound por HubSpot. Mi trabajo es cerrar la brecha (GAP) entre donde estás hoy y donde quieres estar facturando.</p>
-            <p>Construyo infraestructura digital agresiva. Sin adornos innecesarios. Solo estrategia pura, automatización y diseño brutalista que obliga a tus prospectos a prestar atención.</p>
-        </article>
+        <h2>CORE ARCHITECTURE // MANIFESTO</h2>
+        
+        <div class="terminal-wrapper hover-target">
+            <div class="terminal-header">
+                <span class="dot red"></span>
+                <span class="dot yellow"></span>
+                <span class="dot green"></span>
+                <span class="terminal-title">user@vb-studio:~/philosophy</span>
+            </div>
+            <div class="terminal-body">
+                <p class="cmd">> run protocol_truth.exe</p>
+                <p class="output">
+                    <span class="dim">LOADING...</span><br><br>
+                    <span class="highlight">ERROR 404:</span> "DISEÑO BONITO" NOT FOUND.<br>
+                    <span class="success">SUCCESS:</span> INFRASTRUCTURE FOUND.<br><br>
+                    La mayoría de las agencias te venden píxeles. Nosotros vendemos <span class="white">Activos de Capital</span>.
+                    Tu negocio no necesita más colores; necesita <span class="white">Automatización</span>, <span class="white">Velocidad de Carga</span> y <span class="white">Captura de Datos</span>.<br><br>
+                    Somos Visual Blueprint. No decoramos tu negocio. <span class="blink">_</span>Lo recableamos para facturar.
+                </p>
+            </div>
+        </div>
     </section>
     
                 <section id="contacto">
